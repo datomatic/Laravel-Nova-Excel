@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Gravatar;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Http\Requests\ActionRequest;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Nova;
@@ -240,7 +241,11 @@ class ExportToExcel extends Action implements FromQuery, WithCustomChunkSize, Wi
             }
 
             if (\in_array($field->attribute, $only, true)) {
-                $row[$field->attribute] = $field->value;
+                if($field instanceof Select){
+                    $row[$field->attribute] = $field->displayedAs ?? $field->value;
+                }else{
+                    $row[$field->attribute] = $field->value;
+                }
             } elseif (\in_array($field->name, $only, true)) {
                 // When no field could be found by their attribute name, it's most likely a computed field.
                 $row[$field->name] = $field->value;
